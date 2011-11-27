@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class LeushiActivity extends Activity {
 	MainMenuView menu = null;
@@ -15,7 +17,8 @@ public class LeushiActivity extends Activity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(getMenu());
     }
     
@@ -46,7 +49,7 @@ public class LeushiActivity extends Activity {
     		newGameButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game)) {
 				@Override
 	        	public void onClick() {
-	        		LeushiActivity.this.setContentView(newGame());
+	        		setContentView(newGame());
 	        		getMenu().addItem(getResumeButton());
 	        	}
 	        };
@@ -59,7 +62,8 @@ public class LeushiActivity extends Activity {
     		resumeButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.resume)) {
 				@Override
 	        	public void onClick() {
-	        		LeushiActivity.this.setContentView(getGame());
+					getGame().resume();
+	        		setContentView(getGame());
 	        	}
 	        };
     	}
@@ -71,7 +75,7 @@ public class LeushiActivity extends Activity {
     		quitButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.quit)) {
 				@Override
 	        	public void onClick() {
-	        		LeushiActivity.this.finish();
+	        		finish();
 	        	}
 	        };
     	}
@@ -81,6 +85,7 @@ public class LeushiActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		if (game != null && game.getVisibility() == View.VISIBLE) {
+			getGame().pause();
 			setContentView(getMenu());
 		} else {
 			super.onBackPressed();

@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 public class MainMenuView extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap menuBackground;
