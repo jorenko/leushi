@@ -135,7 +135,9 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 				empty = false;
 				if (row == board[col].length-1) {
-					board[col][row] = falling[col];
+					if (falling[col] != TOP) {
+						board[col][row] = falling[col];
+					}
 					falling[col] = EMPTY;
 					continue;
 				}
@@ -147,17 +149,6 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 				if (falling[col] == TOP && board[col][row+1] != EMPTY) {
 					tickTop(col, row);
-					/*
-					for (int r = row+1; r < board[col].length; r++) {
-						if (board[col][r] == BOTTOM) {
-							for (int i = r; i > row; i--) {
-								score += 10;
-								board[col][i] = EMPTY;
-							}
-						}
-					}
-					falling[col] = EMPTY;
-					*/
 					continue;
 				}
 				if (board[col][row+1] != EMPTY) {
@@ -167,19 +158,28 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			}
 			if (empty) {
+				falling = next;
 				for (int col = 0; col < falling.length; col++) {
 					switch(falling[col]) {
 					case EMPTY:
 						break;
 					case TOP:
-						tickTop(col, -1);
+						if (board[col][0] != EMPTY) {
+							tickTop(col, -1);
+						}
 						break;
 					default:
-						gameOver = true;
+						if (board[col][0] != EMPTY) {
+							falling = new int[falling.length];
+							for (int i = 0; i < falling.length; i++) {
+								falling[i] = EMPTY;
+							}
+							gameOver = true;
+							return;
+						}
 						break;
 					}
 				}
-				falling = next;
 				populateNext(2);
 				row = 0;
 			} else {
