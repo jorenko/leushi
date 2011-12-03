@@ -96,6 +96,14 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 		
+		public void setSize(int w, int h) {
+			w /= board.length;
+			h /= (board[0].length+1);
+			int dim = w < h ? w : h;
+			
+			scalePieces(dim, dim);
+		}
+		
 		public void populateNext(int numcols) {
 			List<Integer> cols = new ArrayList<Integer>();
 			List<Integer> addto = new ArrayList<Integer>();
@@ -249,11 +257,15 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		background = Bitmap.createScaledBitmap(background, width, height, true);
+		board.setSize((int)(getWidth()*0.78), getHeight());
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		background = Bitmap.createScaledBitmap(background, getWidth(), getHeight(), true);
+		int w = getWidth();
+		int h = getHeight();
+		background = Bitmap.createScaledBitmap(background, w, h, true);
+		board.setSize((int)(w*0.8), h);
 		thread = new GameThread();
 		thread.setRunning(true);
 		thread.start();
