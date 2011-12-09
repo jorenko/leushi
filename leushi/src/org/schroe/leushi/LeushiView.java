@@ -253,14 +253,12 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 										});
 	}
 
-	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		background = Bitmap.createScaledBitmap(background, width, height, true);
 		board.setSize((int)(getWidth()*0.78), getHeight());
 	}
 
-	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		int w = getWidth();
 		int h = getHeight();
@@ -271,7 +269,6 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		thread.start();
 	}
 
-	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		boolean retry = true;
 		thread.setRunning(false);
