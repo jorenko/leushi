@@ -22,8 +22,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public class Sprite {
 		Bitmap image;
 		double x, y;
-		public Sprite(double resource, double x, double y) {
-			image = BitmapFactory.decodeResource(getResources(), R.drawable.greenball);
+		public Sprite(int resource, double x, double y) {
+			image = BitmapFactory.decodeResource(getResources(), resource);
 			this.x = x;
 			this.y = y;
 		}
@@ -241,14 +241,16 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		super(context, attrs);
 		getHolder().addCallback(this);
 		
-		background = BitmapFactory.decodeResource(getResources(), R.drawable.game_background);
+		background = BitmapFactory.decodeResource(getResources(), R.drawable.menu_background);
 		thread = new GameThread();
 		board = new GameBoard(7, 4, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
 										new Bitmap[] {
-											BitmapFactory.decodeResource(getResources(), R.drawable.greenball),
-											BitmapFactory.decodeResource(getResources(), R.drawable.blueball),
-											BitmapFactory.decodeResource(getResources(), R.drawable.redball),
-											BitmapFactory.decodeResource(getResources(), R.drawable.yellowball),
+											BitmapFactory.decodeResource(getResources(), R.drawable.airball),
+											BitmapFactory.decodeResource(getResources(), R.drawable.decayball),
+											BitmapFactory.decodeResource(getResources(), R.drawable.earthball),
+											BitmapFactory.decodeResource(getResources(), R.drawable.fireball),
+											BitmapFactory.decodeResource(getResources(), R.drawable.growthball),
+											BitmapFactory.decodeResource(getResources(), R.drawable.waterball),
 										});
 	}
 
