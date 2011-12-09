@@ -8,11 +8,12 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class LeushiActivity extends Activity {
-	MainMenuView menu = null;
-	LeushiView game = null;
-	MainMenuView.MenuItem newGameButton = null;
-	MainMenuView.MenuItem resumeButton = null;
-	MainMenuView.MenuItem quitButton = null;
+	private MainMenuView menu = null;
+	private LeushiView game = null;
+	private MainMenuView.MenuItem newGameButton = null;
+	private MainMenuView.MenuItem resumeButton = null;
+	private MainMenuView.MenuItem quitButton = null;
+	private MainMenuView.MenuItem title;
 	
     /** Called when the activity is first created. */
     @Override
@@ -25,8 +26,9 @@ public class LeushiActivity extends Activity {
     private MainMenuView getMenu() {
     	if (menu == null) {
             menu = new MainMenuView(this, null, BitmapFactory.decodeResource(getResources(), R.drawable.menu_background));
+            menu.addItem(getTitleButton());
             menu.addItem(getNewGameButton());
-            menu.addItem(getQuitButton()); 
+            menu.addItem(getQuitButton());
     	}
     	return menu;
     }
@@ -42,6 +44,18 @@ public class LeushiActivity extends Activity {
     	} else {
     		return game;
     	}
+    }
+    
+    private MainMenuView.MenuItem getTitleButton() {
+    	if (title == null) {
+    		title = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.title)) {
+    			@Override
+    			public void onClick() {
+    				// The blackest of the blackest black... NNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOTHIIIIIIINNNNNNNNGGGGGGGGGGGGG
+    			}
+    		};
+    	}
+    	return title;
     }
     
     private MainMenuView.MenuItem getNewGameButton() {
