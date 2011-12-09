@@ -77,14 +77,16 @@ public class MainMenuView extends SurfaceView implements SurfaceHolder.Callback 
 		}
 		return false;
 	}
-	
+
 	public void addItem(MenuItem item) {
 		if (item.rect == null) {
 			if (items.size() == 0) {
-				item.rect = new Rect(0, 0, item.image.getWidth(), item.image.getHeight());
+				int left = (menuBackground.getWidth()/2) - (item.image.getWidth()/2);
+				item.rect = new Rect(left, 0, left + item.image.getWidth(), item.image.getHeight());
 			} else {
 				MenuItem last = items.get(items.size()-1);
-				item.rect = new Rect(last.rect.left, last.rect.bottom+1, last.rect.left+item.image.getWidth(), last.rect.bottom+1+item.image.getHeight());
+				int left = (menuBackground.getWidth()/2) - (item.image.getWidth()/2);
+				item.rect = new Rect(left, last.rect.bottom+1, left+item.image.getWidth(), last.rect.bottom+1+item.image.getHeight());
 			}
 		}
 		items.add(item);
