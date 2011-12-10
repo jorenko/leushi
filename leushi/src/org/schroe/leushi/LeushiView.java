@@ -8,16 +8,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 
 public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
-	Bitmap background = null;
-	GameThread thread = null;
-	double lastTime = 0;
-	GameBoard board = null;
-	double elapsed;
+	private Bitmap background = null;
+	private GameThread thread = null;
+	private double lastTime = 0;
+	private GameBoard board = null;
+	private double elapsed;
+	private final int COLUMNS = 4;
+	private final int ROWS = 7;
+	private final double BOARD_WIDTH_RATIO = 0.8;
+	private int downOn = -1;
 	
 	public class Sprite {
 		Bitmap image;
@@ -101,6 +106,12 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			int dim = w < h ? w : h;
 			
 			scalePieces(dim, dim);
+		}
+		
+		public void swap(int a, int b) {
+			int[] temp = board[a];
+			board[a] = board[b];
+			board[b] = temp;
 		}
 		
 		public void populateNext(int numcols) {
@@ -243,7 +254,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		background = BitmapFactory.decodeResource(getResources(), R.drawable.menu_background);
 		thread = new GameThread();
-		board = new GameBoard(7, 4, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
+		board = new GameBoard(ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
 										new Bitmap[] {
 											BitmapFactory.decodeResource(getResources(), R.drawable.airball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.decayball),
@@ -257,14 +268,14 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		background = Bitmap.createScaledBitmap(background, width, height, true);
-		board.setSize((int)(getWidth()*0.78), getHeight());
+		board.setSize((int)(getWidth()*0.8), getHeight());
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		int w = getWidth();
 		int h = getHeight();
 		background = Bitmap.createScaledBitmap(background, w, h, true);
-		board.setSize((int)(w*0.8), h);
+		board.setSize((int)(w*BOARD_WIDTH_RATIO), h);
 		thread = new GameThread();
 		thread.setRunning(true);
 		thread.start();
@@ -306,6 +317,31 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void resume() {
 		thread.setRunning(true);
 		this.setVisibility(VISIBLE);
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		int col = (int)event.getX();
+		int w = getWidth();
+		w *= BOARD_WIDTH_RATIO;
+		w /= COLUMNS;
+		col /= w;
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			if (col >= 0 && col < COLUMNS) {
+				downOn = col;
+			}
+			return true;
+		case MotionEvent.ACTION_UP:
+			if (downOn >= 0 && col >= 0 && col < COLUMNS) {
+				if (Math.abs(downOn - col) == 1) {
+					board.swap(downOn, col);
+				}
+			}
+			downOn = -1;
+			return true;
+		}
+		return false;
 	}
 	
 	public class GameThread extends Thread {
