@@ -7,6 +7,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -23,6 +26,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private final int ROWS = 7;
 	private final double BOARD_WIDTH_RATIO = 0.8;
 	private int downOn = -1;
+	private int hovering = -1;
 	
 	public class Sprite {
 		Bitmap image;
@@ -306,6 +310,20 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	public void draw(Canvas c) {
 		c.drawBitmap(background, 0, 0, null);
+		if (downOn >= 0) {
+			Paint p = new Paint();
+			p.setARGB(0x80, 0xbb, 0xbb, 0xcc);
+			p.setStyle(Style.FILL);
+			Rect r = new Rect(downOn*getColumnWidth(), 0, (downOn+1)*getColumnWidth(), getHeight());
+			c.drawRect(r, p);
+		}
+		if (hovering >= 0) {
+			Paint p = new Paint();
+			p.setARGB(0x80, 0xbb, 0xcc, 0xbb);
+			p.setStyle(Style.FILL);
+			Rect r = new Rect(hovering*getColumnWidth(), 0, (hovering+1)*getColumnWidth(), getHeight());
+			c.drawRect(r, p);
+		}
 		board.draw(c);
 	}
 	
@@ -319,13 +337,19 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		this.setVisibility(VISIBLE);
 	}
 	
+	public int getColumnWidth() {
+		return (int)((getWidth() * BOARD_WIDTH_RATIO) / COLUMNS);
+	}
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int col = (int)event.getX();
-		int w = getWidth();
-		w *= BOARD_WIDTH_RATIO;
-		w /= COLUMNS;
-		col /= w;
+		if (board.gameOver) {
+			downOn = -1;
+			hovering = -1;
+			return false;
+		}
+		
+		int col = (int)(event.getX() / getColumnWidth());
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			if (col >= 0 && col < COLUMNS) {
@@ -339,6 +363,14 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 			}
 			downOn = -1;
+			hovering = -1;
+			return true;
+		case MotionEvent.ACTION_MOVE:
+			if (downOn >= 0 && col >= 0 && col < COLUMNS) {
+				if (Math.abs(downOn - col) == 1) {
+					hovering = col;
+				}
+			}
 			return true;
 		}
 		return false;
