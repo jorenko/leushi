@@ -6,6 +6,7 @@
 
     <uses-sdk android:minSdkVersion="7" />
     <uses-configuration android:reqFiveWayNav="false" android:reqHardKeyboard="false" android:reqKeyboardType="undefined" android:reqNavigation="undefined" android:reqTouchScreen="finger"/>
+    <supports-screens android:anyDensity="true" android:resizeable="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
 
     <application
         android:icon="@drawable/ic_launcher"

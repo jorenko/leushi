@@ -13,7 +13,8 @@ public class LeushiActivity extends Activity {
 	private MainMenuView.MenuItem newGameButton = null;
 	private MainMenuView.MenuItem resumeButton = null;
 	private MainMenuView.MenuItem quitButton = null;
-	private MainMenuView.MenuItem title;
+	private MainMenuView.MenuItem title = null;
+	private MainMenuView.MenuItem company = null;
 	
     /** Called when the activity is first created. */
     @Override
@@ -29,6 +30,7 @@ public class LeushiActivity extends Activity {
             menu.addItem(getTitleButton());
             menu.addItem(getNewGameButton());
             menu.addItem(getQuitButton());
+            menu.addItem(getCompanyButton());
     	}
     	return menu;
     }
@@ -48,7 +50,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getTitleButton() {
     	if (title == null) {
-    		title = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.title)) {
+    		title = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.title), 0, 0.0) {
     			@Override
     			public void onClick() {
     				// The blackest of the blackest black... NNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOTHIIIIIIINNNNNNNNGGGGGGGGGGGGG
@@ -60,7 +62,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getNewGameButton() {
     	if (newGameButton == null) {
-    		newGameButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game)) {
+    		newGameButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game), 0, 0.54) {
 				@Override
 	        	public void onClick() {
 	        		setContentView(newGame());
@@ -73,7 +75,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getResumeButton() {
     	if (resumeButton == null) {
-    		resumeButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.resume)) {
+    		resumeButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.resume), 0, 0.42) {
 				@Override
 	        	public void onClick() {
 					getGame().resume();
@@ -86,7 +88,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getQuitButton() {
     	if (quitButton == null) {
-    		quitButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.quit)) {
+    		quitButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.quit), 0, 0.66) {
 				@Override
 	        	public void onClick() {
 	        		finish();
@@ -94,6 +96,18 @@ public class LeushiActivity extends Activity {
 	        };
     	}
     	return quitButton;
+    }
+    
+    private MainMenuView.MenuItem getCompanyButton() {
+    	if (company == null) {
+    		company = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.fishlevelgames), 0, 0.93) {
+    			@Override
+    			public void onClick() {
+    				// The blackest of the blackest black... NNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOTHIIIIIIINNNNNNNNGGGGGGGGGGGGG
+    			}
+    		};
+    	}
+    	return company;
     }
 	
 	@Override
