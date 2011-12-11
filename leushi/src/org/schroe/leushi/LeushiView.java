@@ -211,7 +211,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 								// The match is allowed to clear and averts near disaster.
 								score += 5;
 								falling[col] = EMPTY;
-								board[col][row+1] = EMPTY;
+								board[col][0] = EMPTY;
 							} else {
 								// Game over, man! Clear out the falling row so everything draws nicely
 								falling = new int[falling.length];
