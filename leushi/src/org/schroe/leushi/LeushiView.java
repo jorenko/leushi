@@ -462,9 +462,12 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			downRow = row;
 			return true;
 		case MotionEvent.ACTION_UP:
-			if (downCol >= 0 && col >= 0 && col < COLUMNS) {
-				if (Math.abs(downCol - col) == 1) {
-					board.swap(downCol, col);
+			if (downCol >= 0 && col >= 0) {
+				if (downCol > col) {
+					board.swap(downCol, downCol - 1);
+				} else if (downCol < col) {
+					if (downCol + 1 < COLUMNS)
+						board.swap(downCol, downCol + 1);
 				}
 			}
 			if ((downCol == col) && ((row - downRow) > 1)) {
