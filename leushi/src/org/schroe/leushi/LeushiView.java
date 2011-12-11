@@ -8,12 +8,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.TextView;
 
 
 public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
@@ -305,7 +307,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		background = Bitmap.createScaledBitmap(background, width, height, true);
-		board.setSize((int)(getWidth()*0.8), getHeight());
+		board.setSize((int)(getWidth()*BOARD_WIDTH_RATIO), getHeight());
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
@@ -386,6 +388,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			c.drawRect(r, p);
 		}
 		board.draw(c);
+		Paint textp = new Paint();
+		textp.setARGB(0xff, 0x80, 0x80, 0x80);
+		textp.setTextAlign(Align.RIGHT);
+		textp.setTextSize(20);
+		c.drawText(Integer.toString(board.score), (int)(getWidth()*BOARD_WIDTH_RATIO), 50, textp);
 	}
 	
 	/**
