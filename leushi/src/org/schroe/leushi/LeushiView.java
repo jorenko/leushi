@@ -114,6 +114,16 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		public void swap(int a, int b) {
+			if (falling[a] != EMPTY && falling[b] == EMPTY && board[b][row] != EMPTY) {
+				falling[b] = falling[a];
+				falling[a] = EMPTY;
+			}
+
+			if (falling[b] != EMPTY && falling[a] == EMPTY && board[a][row] != EMPTY) {
+				falling[a] = falling[b];
+				falling[b] = EMPTY;
+			}
+			
 			int[] temp = board[a];
 			board[a] = board[b];
 			board[b] = temp;
