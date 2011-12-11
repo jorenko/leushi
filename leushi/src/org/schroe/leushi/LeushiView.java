@@ -15,7 +15,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.TextView;
 
 
 public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
@@ -388,11 +387,13 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			c.drawRect(r, p);
 		}
 		board.draw(c);
+		
 		Paint textp = new Paint();
 		textp.setARGB(0xff, 0x80, 0x80, 0x80);
 		textp.setTextAlign(Align.RIGHT);
-		textp.setTextSize(20);
-		c.drawText(Integer.toString(board.score), (int)(getWidth()*BOARD_WIDTH_RATIO), 50, textp);
+		textp.setTextSize((int)(getResources().getDisplayMetrics().density * 16 + 0.5));
+		c.drawText("Score", getWidth(), 30, textp);
+		c.drawText(Integer.toString(board.score), getWidth(), 60, textp);
 	}
 	
 	/**
