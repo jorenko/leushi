@@ -468,6 +468,9 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				if (Math.abs(downCol - col) == 1) {
 					hovering = col;
 				}
+				if (downCol == col) {
+					hovering = -1;
+				}
 			}
 			return true;
 		}
