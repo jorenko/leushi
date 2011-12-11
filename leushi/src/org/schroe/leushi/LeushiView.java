@@ -456,7 +456,9 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		int row = (int)(event.getY() / getRowHeight());
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			downCol = col;
+			if (col < COLUMNS) {
+				downCol = col;
+			}
 			downRow = row;
 			return true;
 		case MotionEvent.ACTION_UP:
