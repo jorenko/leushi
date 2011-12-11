@@ -31,44 +31,6 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private long tick_ms;
 	private boolean speedUp = false;
 	private final long MIN_TICK = 50;
-	
-	public class Sprite {
-		Bitmap image;
-		double x, y;
-		public Sprite(int resource, double x, double y) {
-			image = BitmapFactory.decodeResource(getResources(), resource);
-			this.x = x;
-			this.y = y;
-		}
-		
-		public void move(double x, double y) {
-			this.x += x;
-			this.y += y;
-		}
-		
-		public void wrap(double left, double top, double right, double bottom) {
-			top -= image.getHeight()/2;
-			bottom -= image.getHeight()/2;
-			left -= image.getWidth()/2;
-			right -= image.getWidth()/2;
-			if (x < left) {
-				x += (right-left); 
-			}
-			if (x > right) {
-				x -= (right-left); 
-			}
-			if (y < top) {
-				y += (bottom-top); 
-			}
-			if (y > bottom) {
-				y -= (bottom-top); 
-			}
-		}
-		
-		public void draw(Canvas c) {
-			c.drawBitmap(image, (float)x, (float)y, null);
-		}
-	}
 
 	public class GameBoard {
 		private int board[][];
@@ -100,6 +62,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 		
+		/**
+		 * Scales all the game pieces to the specified size.
+		 * @param w The width to scale to
+		 * @param h The height to scale to
+		 */
 		public void scalePieces(int w, int h) {
 			bottom = Bitmap.createScaledBitmap(bottom, w, h, true);
 			top = Bitmap.createScaledBitmap(top, w, h, true);
@@ -107,7 +74,12 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				pieces[i] = Bitmap.createScaledBitmap(pieces[i], w, h, true);
 			}
 		}
-		
+
+		/**
+		 * Sets the total size of the game board.
+		 * @param w The new width.
+		 * @param h The new height.
+		 */
 		public void setSize(int w, int h) {
 			w /= board.length;
 			h /= (board[0].length+1);
@@ -116,6 +88,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			scalePieces(dim, dim);
 		}
 		
+		/**
+		 * Swaps the contents of the two specified columns
+		 * @param a a column to swap
+		 * @param b a column to swap
+		 */
 		public void swap(int a, int b) {
 			if (falling[a] != EMPTY && falling[b] == EMPTY && board[b][row] != EMPTY) {
 				falling[b] = falling[a];
@@ -132,6 +109,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			board[b] = temp;
 		}
 		
+		/**
+		 * Generate the next 'on deck' row
+		 * 
+		 * @param numcols The number of columns to put new pieces in
+		 */
 		public void populateNext(int numcols) {
 			List<Integer> cols = new ArrayList<Integer>();
 			List<Integer> addto = new ArrayList<Integer>();
@@ -148,6 +130,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 		
+		/**
+		 * Do the tick processing for a top-half container piece at the specified position.
+		 * @param col The column the top piece is in
+		 * @param row The row the top piece is in
+		 */
 		private void tickTop(int col, int row) {
 			for (int r = row+1; r < board[col].length; r++) {
 				if (board[col][r] == BOTTOM) {
@@ -160,6 +147,13 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			falling[col] = EMPTY;
 		}
 		
+		/**
+		 * Performs all necessary processing for one update to the game board.
+		 * 
+		 * This includes shifting the falling row down by one, clearing any
+		 * matches, updating the score, and generating a new next row if all
+		 * falling pieces have come to rest.
+		 */
 		public void tick() {
 			if (gameOver) {
 				return;
@@ -171,6 +165,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 				empty = false;
 				if (row == board[col].length-1) {
+					// we've reached the bottom of the board
 					if (falling[col] != TOP) {
 						board[col][row] = falling[col];
 					}
@@ -178,40 +173,54 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 					continue;
 				}
 				if (falling[col] == board[col][row+1]) {
+					// Match!
 					score += 5;
 					falling[col] = EMPTY;
 					board[col][row+1] = EMPTY;
 					continue;
 				}
 				if (falling[col] == TOP && board[col][row+1] != EMPTY) {
+					// A top half just landed. Check for bottoms in the stack...
 					tickTop(col, row);
 					continue;
 				}
 				if (board[col][row+1] != EMPTY) {
+					// A piece has landed and is not a match
 					board[col][row] = falling[col];
 					falling[col] = EMPTY;
 					continue;
 				}
 			}
 			if (empty) {
+				// We've dropped all our falling pieces into the actual board. Time to start the next row falling.
 				falling = next;
+				// First we need to check whether the new falling row will cause a game over by dropping onto an occupied space.
 				for (int col = 0; col < falling.length; col++) {
 					switch(falling[col]) {
 					case EMPTY:
 						break;
 					case TOP:
 						if (board[col][0] != EMPTY) {
+							// A top has landed... on the top.
 							tickTop(col, -1);
 						}
 						break;
 					default:
 						if (board[col][0] != EMPTY) {
-							falling = new int[falling.length];
-							for (int i = 0; i < falling.length; i++) {
-								falling[i] = EMPTY;
+							if (board[col][0] == falling[col]) {
+								// The match is allowed to clear and averts near disaster.
+								score += 5;
+								falling[col] = EMPTY;
+								board[col][row+1] = EMPTY;
+							} else {
+								// Game over, man! Clear out the falling row so everything draws nicely
+								falling = new int[falling.length];
+								for (int i = 0; i < falling.length; i++) {
+									falling[i] = EMPTY;
+								}
+								gameOver = true;
+								return;
 							}
-							gameOver = true;
-							return;
 						}
 						break;
 					}
@@ -227,6 +236,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			return score;
 		}
 		
+		/**
+		 * Gets the bitmap associated with the given game-piece index.
+		 * @param i The index to retrieve the bitmap for
+		 * @return The bitmap, or null if the index indicates any empty square
+		 */
 		public Bitmap getBitmap(int i) {
 			switch (i) {
 			case BOTTOM:
@@ -243,6 +257,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 		
+		/**
+		 * Draws the game board into the supplied canvas.
+		 * @param c The canvas to draw onto.
+		 */
 		public void draw(Canvas c) {
 			Bitmap b;
 			int width = bottom.getWidth();
@@ -313,6 +331,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
+	/**
+	 * Performs a game board tick if the specified milliseconds have elapsed since the last one.
+	 * @param ms The time in milliseconds that must have elapsed for a tick to be performed
+	 */
 	private void tickIfElapsed(long ms) {
 		if (elapsed >= ms) {
 			elapsed -= ms;
@@ -325,6 +347,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
+	/**
+	 * Update the game state.
+	 * @param ms The current system time in milliseconds
+	 */
 	public void update(long ms) {
 		elapsed += ms - lastTime;
 		lastTime = ms;
@@ -339,6 +365,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
+	/**
+	 * Draws the whole game view.
+	 * @param c The canvas to draw onto.
+	 */
 	public void draw(Canvas c) {
 		c.drawBitmap(background, 0, 0, null);
 		if (downCol >= 0) {
@@ -358,24 +388,46 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		board.draw(c);
 	}
 	
+	/**
+	 * Pauses the game.
+	 */
 	public void pause() {
 		thread.setRunning(false);
 		this.setVisibility(INVISIBLE);
 	}
 	
+	/**
+	 * Resumes a paused game.
+	 */
 	public void resume() {
 		thread.setRunning(true);
 		this.setVisibility(VISIBLE);
 	}
 	
+	/**
+	 * @return The width of each game board column.
+	 */
 	public int getColumnWidth() {
 		return board.bottom.getWidth();
 	}
 	
+	/**
+	 * @return The height of each game board row.
+	 */
 	public int getRowHeight() {
 		return board.bottom.getHeight();
 	}
 	
+	/**
+	 * The touchscreen handler.
+	 * 
+	 * Things to do here:
+	 *  - If the user drags from one column into the next left or right, swap them.
+	 *  - If the user drags down at least two rows, accelerate the drop.
+	 * 
+	 * @param event The motion event.
+	 * @return True if the event was handled, false otherwise. 
+	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (board.gameOver) {
