@@ -13,18 +13,36 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class MainMenuView extends SurfaceView implements SurfaceHolder.Callback {
-    private Bitmap menuBackground;
+    private Bitmap background;
+    private Rect bgSrc;
+    private Rect bgDst;
     private List<MenuItem> items; 
     
     public static abstract class MenuItem {
     	private Bitmap image = null;
-    	private Rect rect = null;
-    	public MenuItem(Bitmap b, int x, int y) {
+    	private double width_percent = 0;
+    	private double top_percent = 0;
+    	private Rect src = null;
+    	private Rect dst = null;
+    	public MenuItem(Bitmap b, double width_percent, double top_percent) {
     		this.image = b;
-    		this.rect = new Rect(x, y, x+b.getWidth(), y+b.getHeight());
+    		this.width_percent = width_percent;
+    		this.top_percent = top_percent;
+    		src = new Rect(0, 0, image.getWidth(), image.getHeight());
     	}
-    	public MenuItem(Bitmap b) {
-    		this.image = b;
+    	
+    	public void updateSize(int total_width, int total_height) {
+    		int width = (int)(width_percent * total_width);
+    		int height = (int)((double)width/(double)image.getWidth() * image.getHeight());
+    		int top = (int)(top_percent * total_height);
+    		int left = total_width/2 - width/2;
+    		dst = new Rect(left, top, left + width, top + height);
+    	}
+    	
+    	public void draw(Canvas c) {
+    		if (dst != null) {
+    			c.drawBitmap(image, src, dst, null);
+    		}
     	}
     	
     	public abstract void onClick();
@@ -33,46 +51,51 @@ public class MainMenuView extends SurfaceView implements SurfaceHolder.Callback 
 	public MainMenuView(Context context, AttributeSet attrs, Bitmap background) {
 		super(context, attrs);
 		getHolder().addCallback(this);
-		menuBackground = background;
+		this.background = background;
+		bgSrc = new Rect(0, 0, background.getWidth(), background.getHeight());
+		bgDst = new Rect(0, 0, getWidth(), getHeight());
 		items = new ArrayList<MenuItem>();
 	}
 	
 	public void draw() {
 		Canvas c = getHolder().lockCanvas();
 		if (c != null) {
-			c.drawBitmap(menuBackground, 0, 0, null);
+			c.drawBitmap(background, bgSrc, bgDst, null);
 			for (MenuItem i : items) {
-				c.drawBitmap(i.image, null, i.rect, null);
+				i.draw(c);
 			}		
 			getHolder().unlockCanvasAndPost(c);
 		}
 	}
 
-	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		menuBackground = Bitmap.createScaledBitmap(menuBackground, width, height, true);
+		bgDst = new Rect(0, 0, width, height);
+		for (MenuItem i : items) {
+			i.updateSize(getWidth(), getHeight());
+		}
 		draw();
 	}
 
-	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		menuBackground = Bitmap.createScaledBitmap(menuBackground, getWidth(), getHeight(), true);
+		bgDst = new Rect(0, 0, getWidth(), getHeight());
+		for (MenuItem i : items) {
+			i.updateSize(getWidth(), getHeight());
+		}
 		draw();
 	}
 
-	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			for (MenuItem i : items) {
-				if (i.rect.contains((int)event.getX(), (int)event.getY())) {
+				if (i.dst.contains((int)event.getX(), (int)event.getY())) {
 					i.onClick();
 					return true;
 				}
@@ -80,15 +103,10 @@ public class MainMenuView extends SurfaceView implements SurfaceHolder.Callback 
 		}
 		return false;
 	}
-	
+
 	public void addItem(MenuItem item) {
-		if (item.rect == null) {
-			if (items.size() == 0) {
-				item.rect = new Rect(0, 0, item.image.getWidth(), item.image.getHeight());
-			} else {
-				MenuItem last = items.get(items.size()-1);
-				item.rect = new Rect(last.rect.left, last.rect.bottom+1, last.rect.left+item.image.getWidth(), last.rect.bottom+1+item.image.getHeight());
-			}
+		if (item.width_percent == 0.0) {
+			item.width_percent = (double)item.image.getWidth() / (double)background.getWidth();
 		}
 		items.add(item);
 		draw();
