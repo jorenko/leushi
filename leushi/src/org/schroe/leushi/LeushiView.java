@@ -19,6 +19,7 @@ import android.view.SurfaceView;
 
 public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private Bitmap background = null;
+	private Bitmap gameover = null;
 	private GameThread thread = null;
 	private long lastTime = 0;
 	private GameBoard board = null;
@@ -290,6 +291,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		getHolder().addCallback(this);
 		
 		background = BitmapFactory.decodeResource(getResources(), R.drawable.menu_background);
+		gameover = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
 		thread = new GameThread();
 		board = new GameBoard(ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
 										new Bitmap[] {
@@ -305,6 +307,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
+		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)width/(float)background.getWidth())), (int)(gameover.getHeight()*((float)height/(float)background.getHeight())), true);
 		background = Bitmap.createScaledBitmap(background, width, height, true);
 		board.setSize((int)(getWidth()*BOARD_WIDTH_RATIO), getHeight());
 	}
@@ -312,6 +315,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		int w = getWidth();
 		int h = getHeight();
+		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)w/(float)background.getWidth())), (int)(gameover.getHeight()*((float)h/(float)background.getHeight())), true);
 		background = Bitmap.createScaledBitmap(background, w, h, true);
 		board.setSize((int)(w*BOARD_WIDTH_RATIO), h);
 		thread = new GameThread();
@@ -394,6 +398,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		textp.setTextSize((int)(getResources().getDisplayMetrics().density * 16 + 0.5));
 		c.drawText("Score", getWidth(), 30, textp);
 		c.drawText(Integer.toString(board.score), getWidth(), 60, textp);
+		
+		if (board.gameOver) {
+			c.drawBitmap(gameover, getWidth()/2-gameover.getWidth()/2, getHeight()/2-gameover.getHeight()/2, null);
+		}
 	}
 	
 	/**
