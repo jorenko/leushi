@@ -25,9 +25,12 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private final int COLUMNS = 4;
 	private final int ROWS = 7;
 	private final double BOARD_WIDTH_RATIO = 0.8;
-	private int downOn = -1;
+	private int downCol = -1;
+	private int downRow = -1;
 	private int hovering = -1;
 	private long tick_ms;
+	private boolean speedUp = false;
+	private final long MIN_TICK = 50;
 	
 	public class Sprite {
 		Bitmap image;
@@ -310,28 +313,39 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
-	public void update(long ms) {
-		elapsed += ms - lastTime;
-		lastTime = ms;
-		
-		if (elapsed >= tick_ms) {
-			elapsed -= tick_ms;
+	private void tickIfElapsed(long ms) {
+		if (elapsed >= ms) {
+			elapsed -= ms;
 			int before = board.score / 100;
 			board.tick();
 			int after = board.score / 100;
-			if (after > before && tick_ms > 50) {
-				tick_ms -= 50;
+			if (after > before && tick_ms > MIN_TICK) {
+				tick_ms -= MIN_TICK;
 			}
+		}
+	}
+	
+	public void update(long ms) {
+		elapsed += ms - lastTime;
+		lastTime = ms;
+		if (speedUp) {
+			int[] falling = board.falling;
+			tickIfElapsed(MIN_TICK);
+			if (board.falling != falling) {
+				speedUp = false;
+			}
+		} else {
+			tickIfElapsed(tick_ms);
 		}
 	}
 	
 	public void draw(Canvas c) {
 		c.drawBitmap(background, 0, 0, null);
-		if (downOn >= 0) {
+		if (downCol >= 0) {
 			Paint p = new Paint();
 			p.setARGB(0x80, 0xbb, 0xbb, 0xcc);
 			p.setStyle(Style.FILL);
-			Rect r = new Rect(downOn*getColumnWidth(), 0, (downOn+1)*getColumnWidth(), getHeight());
+			Rect r = new Rect(downCol*getColumnWidth(), 0, (downCol+1)*getColumnWidth(), getHeight());
 			c.drawRect(r, p);
 		}
 		if (hovering >= 0) {
@@ -355,36 +369,43 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	public int getColumnWidth() {
-		return (int)((getWidth() * BOARD_WIDTH_RATIO) / COLUMNS);
+		return board.bottom.getWidth();
+	}
+	
+	public int getRowHeight() {
+		return board.bottom.getHeight();
 	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (board.gameOver) {
-			downOn = -1;
+			downCol = -1;
 			hovering = -1;
 			return false;
 		}
 		
 		int col = (int)(event.getX() / getColumnWidth());
+		int row = (int)(event.getY() / getRowHeight());
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			if (col >= 0 && col < COLUMNS) {
-				downOn = col;
-			}
+			downCol = col;
+			downRow = row;
 			return true;
 		case MotionEvent.ACTION_UP:
-			if (downOn >= 0 && col >= 0 && col < COLUMNS) {
-				if (Math.abs(downOn - col) == 1) {
-					board.swap(downOn, col);
+			if (downCol >= 0 && col >= 0 && col < COLUMNS) {
+				if (Math.abs(downCol - col) == 1) {
+					board.swap(downCol, col);
 				}
 			}
-			downOn = -1;
+			if ((downCol == col) && ((row - downRow) > 1)) {
+				speedUp = true;
+			}
+			downCol = -1;
 			hovering = -1;
 			return true;
 		case MotionEvent.ACTION_MOVE:
-			if (downOn >= 0 && col >= 0 && col < COLUMNS) {
-				if (Math.abs(downOn - col) == 1) {
+			if (downCol >= 0 && col >= 0 && col < COLUMNS) {
+				if (Math.abs(downCol - col) == 1) {
 					hovering = col;
 				}
 			}
