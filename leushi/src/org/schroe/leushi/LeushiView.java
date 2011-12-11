@@ -19,14 +19,15 @@ import android.view.SurfaceView;
 public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private Bitmap background = null;
 	private GameThread thread = null;
-	private double lastTime = 0;
+	private long lastTime = 0;
 	private GameBoard board = null;
-	private double elapsed;
+	private long elapsed;
 	private final int COLUMNS = 4;
 	private final int ROWS = 7;
 	private final double BOARD_WIDTH_RATIO = 0.8;
 	private int downOn = -1;
 	private int hovering = -1;
+	private long tick_ms;
 	
 	public class Sprite {
 		Bitmap image;
@@ -267,6 +268,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 											BitmapFactory.decodeResource(getResources(), R.drawable.growthball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.waterball),
 										});
+		tick_ms = 1000;
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -298,13 +300,18 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 	}
 	
-	public void update(double ms) {
+	public void update(long ms) {
 		elapsed += ms - lastTime;
 		lastTime = ms;
 		
-		if (elapsed >= 250) {
-			elapsed -= 250;
+		if (elapsed >= tick_ms) {
+			elapsed -= tick_ms;
+			int before = board.score / 100;
 			board.tick();
+			int after = board.score / 100;
+			if (after > before && tick_ms > 50) {
+				tick_ms -= 50;
+			}
 		}
 	}
 	
