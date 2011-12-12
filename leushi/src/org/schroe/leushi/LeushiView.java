@@ -330,7 +330,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)width/(float)backgrounds[current_bg].getWidth())), (int)(gameover.getHeight()*((float)height/(float)backgrounds[current_bg].getHeight())), true);
+		float width_ratio = (float)width/(float)backgrounds[current_bg].getWidth();
+		float height_ratio = (float)height/(float)backgrounds[current_bg].getHeight();
+		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*width_ratio), (int)(gameover.getHeight()*height_ratio), true);
+		divider = Bitmap.createScaledBitmap(divider, (int)(divider.getWidth()*width_ratio), (int)(divider.getHeight()*height_ratio), true);
+		scoreLabel = Bitmap.createScaledBitmap(scoreLabel, (int)(scoreLabel.getWidth()*width_ratio), (int)(scoreLabel.getHeight()*height_ratio), true);
 		for (int i = 0; i < backgrounds.length; i++) {
 			backgrounds[i] = Bitmap.createScaledBitmap(backgrounds[i], width, height, true);
 		}
@@ -340,7 +344,11 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		int w = getWidth();
 		int h = getHeight();
-		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)w/(float)backgrounds[current_bg].getWidth())), (int)(gameover.getHeight()*((float)h/(float)backgrounds[current_bg].getHeight())), true);
+		float width_ratio = (float)w/(float)backgrounds[current_bg].getWidth();
+		float height_ratio = (float)h/(float)backgrounds[current_bg].getHeight();
+		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*width_ratio), (int)(gameover.getHeight()*height_ratio), true);
+		divider = Bitmap.createScaledBitmap(divider, (int)(divider.getWidth()*width_ratio), (int)(divider.getHeight()*height_ratio), true);
+		scoreLabel = Bitmap.createScaledBitmap(scoreLabel, (int)(scoreLabel.getWidth()*width_ratio), (int)(scoreLabel.getHeight()*height_ratio), true);
 		for (int i = 0; i < backgrounds.length; i++) {
 			backgrounds[i] = Bitmap.createScaledBitmap(backgrounds[i], w, h, true);
 		}
@@ -424,7 +432,6 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		textp.setTextAlign(Align.RIGHT);
 		textp.setTextSize((int)(getResources().getDisplayMetrics().density * 24 + 0.5));
 		textp.setTypeface(Typeface.create("Narkism", Typeface.NORMAL));
-		//c.drawText("Score", getWidth(), 30, textp);
 		c.drawBitmap(scoreLabel, getWidth()-scoreLabel.getWidth(), 0, null);
 		c.drawText(Integer.toString(board.score), (int)(getWidth() * 0.96), (int)(getHeight() * 0.08), textp);
 		
@@ -518,7 +525,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		return false;
 	}
-	
+
 	public class GameThread extends Thread {
 		private boolean run = false;
 		
