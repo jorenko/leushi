@@ -151,6 +151,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 						board[col][i] = EMPTY;
 					}
 					onMatch();
+					break;
 				}
 			}
 			falling[col] = EMPTY;
