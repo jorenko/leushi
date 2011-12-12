@@ -300,7 +300,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		getHolder().addCallback(this);
 		
 		backgrounds = new Bitmap[] {
-				BitmapFactory.decodeResource(getResources(), R.drawable.menu_background),
+				BitmapFactory.decodeResource(getResources(), R.drawable.earth_background),
+				BitmapFactory.decodeResource(getResources(), R.drawable.water_background),
 		};
 		gameover = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
 		thread = new GameThread();
