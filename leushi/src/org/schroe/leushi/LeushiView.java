@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -415,11 +416,13 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		board.draw(c);
 		
 		Paint textp = new Paint();
-		textp.setARGB(0xff, 0x80, 0x80, 0x80);
+		textp.setARGB(0xff, 0xc0, 0xc0, 0xc0);
 		textp.setTextAlign(Align.RIGHT);
-		textp.setTextSize((int)(getResources().getDisplayMetrics().density * 16 + 0.5));
-		c.drawText("Score", getWidth(), 30, textp);
-		c.drawText(Integer.toString(board.score), getWidth(), 60, textp);
+		textp.setTextSize((int)(getResources().getDisplayMetrics().density * 24 + 0.5));
+		textp.setTypeface(Typeface.create("Narkism", Typeface.NORMAL));
+		//c.drawText("Score", getWidth(), 30, textp);
+		c.drawBitmap(scoreLabel, getWidth()-scoreLabel.getWidth(), 0, null);
+		c.drawText(Integer.toString(board.score), (int)(getWidth() * 0.96), (int)(getHeight() * 0.08), textp);
 		
 		if (board.gameOver) {
 			c.drawBitmap(gameover, getWidth()/2-gameover.getWidth()/2, getHeight()/2-gameover.getHeight()/2, null);
