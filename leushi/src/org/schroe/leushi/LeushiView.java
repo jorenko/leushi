@@ -18,7 +18,8 @@ import android.view.SurfaceView;
 
 
 public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
-	private Bitmap background = null;
+	private int current_bg = 0;
+	private Bitmap[] backgrounds = null;
 	private Bitmap gameover = null;
 	private GameThread thread = null;
 	private long lastTime = 0;
@@ -144,6 +145,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 						score += 10;
 						board[col][i] = EMPTY;
 					}
+					onMatch();
 				}
 			}
 			falling[col] = EMPTY;
@@ -179,6 +181,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 					score += 5;
 					falling[col] = EMPTY;
 					board[col][row+1] = EMPTY;
+					onMatch();
 					continue;
 				}
 				if (falling[col] == TOP && board[col][row+1] != EMPTY) {
@@ -214,6 +217,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 								score += 5;
 								falling[col] = EMPTY;
 								board[col][0] = EMPTY;
+								onMatch();
 							} else {
 								// Game over, man! Clear out the falling row so everything draws nicely
 								falling = new int[falling.length];
@@ -285,12 +289,19 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			}
 		}
 	}
+	
+	private void onMatch() {
+		current_bg += 1;
+		current_bg %= backgrounds.length;
+	}
 
 	public LeushiView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		getHolder().addCallback(this);
 		
-		background = BitmapFactory.decodeResource(getResources(), R.drawable.menu_background);
+		backgrounds = new Bitmap[] {
+				BitmapFactory.decodeResource(getResources(), R.drawable.menu_background),
+		};
 		gameover = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
 		thread = new GameThread();
 		board = new GameBoard(ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
@@ -307,16 +318,20 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)width/(float)background.getWidth())), (int)(gameover.getHeight()*((float)height/(float)background.getHeight())), true);
-		background = Bitmap.createScaledBitmap(background, width, height, true);
+		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)width/(float)backgrounds[current_bg].getWidth())), (int)(gameover.getHeight()*((float)height/(float)backgrounds[current_bg].getHeight())), true);
+		for (int i = 0; i < backgrounds.length; i++) {
+			backgrounds[i] = Bitmap.createScaledBitmap(backgrounds[i], width, height, true);
+		}
 		board.setSize((int)(getWidth()*BOARD_WIDTH_RATIO), getHeight());
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		int w = getWidth();
 		int h = getHeight();
-		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)w/(float)background.getWidth())), (int)(gameover.getHeight()*((float)h/(float)background.getHeight())), true);
-		background = Bitmap.createScaledBitmap(background, w, h, true);
+		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*((float)w/(float)backgrounds[current_bg].getWidth())), (int)(gameover.getHeight()*((float)h/(float)backgrounds[current_bg].getHeight())), true);
+		for (int i = 0; i < backgrounds.length; i++) {
+			backgrounds[i] = Bitmap.createScaledBitmap(backgrounds[i], w, h, true);
+		}
 		board.setSize((int)(w*BOARD_WIDTH_RATIO), h);
 		thread = new GameThread();
 		thread.setRunning(true);
@@ -375,7 +390,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @param c The canvas to draw onto.
 	 */
 	public void draw(Canvas c) {
-		c.drawBitmap(background, 0, 0, null);
+		c.drawBitmap(backgrounds[current_bg], 0, 0, null);
 		if (downCol >= 0) {
 			Paint p = new Paint();
 			p.setARGB(0x80, 0xbb, 0xbb, 0xcc);
