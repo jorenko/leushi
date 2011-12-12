@@ -100,7 +100,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getCompanyButton() {
     	if (company == null) {
-    		company = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.fishlevelgames), 0, 0.93) {
+    		company = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.fishlevelgames), 0, 0.90) {
     			@Override
     			public void onClick() {
     				// The blackest of the blackest black... NNNNNNNNNOOOOOOOOOOOOOOOOOOOOOOOOOOOTHIIIIIIINNNNNNNNGGGGGGGGGGGGG
