@@ -276,6 +276,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			int height = bottom.getHeight();
 			c.drawBitmap(divider, 0, height - (divider.getHeight()/2), null);
 			Paint tint = new Paint();
+			tint.setStyle(Style.FILL);
+			tint.setARGB(0x40, 0, 0, 0);
+			c.drawRect(new Rect(0, 0, getWidth(), height), tint);
+			c.drawRect(new Rect(width*COLUMNS, 0, getWidth(), getHeight()), tint);
 			for (int col = 0; col < board.length; col++) {
 				b = getBitmap(next[col]);
 				if (b != null) {
