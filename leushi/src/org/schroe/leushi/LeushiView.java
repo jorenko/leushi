@@ -37,6 +37,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private long tick_ms;
 	private boolean speedUp = false;
 	private final long MIN_TICK = 50;
+	private double width_ratio = 1.0;
+	private double height_ratio = 1.0;
 
 	public class GameBoard {
 		private int board[][];
@@ -330,8 +332,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		float width_ratio = (float)width/(float)backgrounds[current_bg].getWidth();
-		float height_ratio = (float)height/(float)backgrounds[current_bg].getHeight();
+		width_ratio = (float)width/(float)backgrounds[current_bg].getWidth();
+		height_ratio = (float)height/(float)backgrounds[current_bg].getHeight();
 		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*width_ratio), (int)(gameover.getHeight()*height_ratio), true);
 		divider = Bitmap.createScaledBitmap(divider, (int)(divider.getWidth()*width_ratio), (int)(divider.getHeight()*height_ratio), true);
 		scoreLabel = Bitmap.createScaledBitmap(scoreLabel, (int)(scoreLabel.getWidth()*width_ratio), (int)(scoreLabel.getHeight()*height_ratio), true);
@@ -344,8 +346,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		int w = getWidth();
 		int h = getHeight();
-		float width_ratio = (float)w/(float)backgrounds[current_bg].getWidth();
-		float height_ratio = (float)h/(float)backgrounds[current_bg].getHeight();
+		width_ratio = (float)w/(float)backgrounds[current_bg].getWidth();
+		height_ratio = (float)h/(float)backgrounds[current_bg].getHeight();
 		gameover = Bitmap.createScaledBitmap(gameover, (int)(gameover.getWidth()*width_ratio), (int)(gameover.getHeight()*height_ratio), true);
 		divider = Bitmap.createScaledBitmap(divider, (int)(divider.getWidth()*width_ratio), (int)(divider.getHeight()*height_ratio), true);
 		scoreLabel = Bitmap.createScaledBitmap(scoreLabel, (int)(scoreLabel.getWidth()*width_ratio), (int)(scoreLabel.getHeight()*height_ratio), true);
@@ -430,10 +432,10 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		Paint textp = new Paint();
 		textp.setARGB(0xff, 0xc0, 0xc0, 0xc0);
 		textp.setTextAlign(Align.RIGHT);
-		textp.setTextSize((int)(getResources().getDisplayMetrics().density * 24 + 0.5));
+		textp.setTextSize((int)(24 * height_ratio));
 		textp.setTypeface(Typeface.create("Narkism", Typeface.NORMAL));
 		c.drawBitmap(scoreLabel, getWidth()-scoreLabel.getWidth(), 0, null);
-		c.drawText(Integer.toString(board.score), (int)(getWidth() * 0.96), (int)(getHeight() * 0.08), textp);
+		c.drawText(Integer.toString(board.score), (int)(getWidth() * 0.98), (int)(getHeight() * 0.08), textp);
 		
 		if (board.gameOver) {
 			c.drawBitmap(gameover, getWidth()/2-gameover.getWidth()/2, getHeight()/2-gameover.getHeight()/2, null);
