@@ -21,6 +21,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private int current_bg = 0;
 	private Bitmap[] backgrounds = null;
 	private Bitmap gameover = null;
+	private Bitmap divider = null;
+	private Bitmap scoreLabel = null;
 	private GameThread thread = null;
 	private long lastTime = 0;
 	private GameBoard board = null;
@@ -271,6 +273,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			Bitmap b;
 			int width = bottom.getWidth();
 			int height = bottom.getHeight();
+			c.drawBitmap(divider, 0, height - (divider.getHeight()/2), null);
+			Paint tint = new Paint();
 			for (int col = 0; col < board.length; col++) {
 				b = getBitmap(next[col]);
 				if (b != null) {
@@ -304,6 +308,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				BitmapFactory.decodeResource(getResources(), R.drawable.water_background),
 		};
 		gameover = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
+		divider = BitmapFactory.decodeResource(getResources(), R.drawable.stroke);
+		scoreLabel = BitmapFactory.decodeResource(getResources(), R.drawable.score);
 		thread = new GameThread();
 		board = new GameBoard(ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
 										new Bitmap[] {
