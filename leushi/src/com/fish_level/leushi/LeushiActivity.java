@@ -1,4 +1,6 @@
-package org.schroe.leushi;
+package com.fish_level.leushi;
+
+import org.schroe.leushi.R;
 
 import android.app.Activity;
 import android.graphics.BitmapFactory;

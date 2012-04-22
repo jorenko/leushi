@@ -1,7 +1,9 @@
-package org.schroe.leushi;
+package com.fish_level.leushi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import org.schroe.leushi.R;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -52,6 +54,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		private final int BOTTOM = -1;
 		private final int TOP = -2;
 		private final int EMPTY = -3;
+		Bitmap lastMatch = null;
 		
 		public GameBoard(int rows, int cols, Bitmap bottom, Bitmap top, Bitmap[] pieces) {
 			rand = new Random(System.currentTimeMillis());

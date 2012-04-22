@@ -1,4 +1,4 @@
-package org.schroe.leushi;
+package com.fish_level.leushi;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,7 +14,7 @@
         <activity
             android:screenOrientation="portrait"
             android:label="@string/app_name"
-            android:name=".LeushiActivity" >
+            android:name="com.fish_level.leushi.LeushiActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
