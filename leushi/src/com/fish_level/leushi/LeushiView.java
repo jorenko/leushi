@@ -43,18 +43,20 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private double height_ratio = 1.0;
 
 	public class GameBoard {
+		private final int BOTTOM = -1;
+		private final int TOP = -2;
+		private final int EMPTY = -3;
+		
 		private int board[][];
 		private int next[];
 		private int falling[];
 		private int row = 0;
 		private int score = 0;
+		private int lastMatch = EMPTY;
+		private int multiplier = 1;
 		private boolean gameOver = false;
 		private Bitmap bottom, top, pieces[];
 		private Random rand = null;
-		private final int BOTTOM = -1;
-		private final int TOP = -2;
-		private final int EMPTY = -3;
-		Bitmap lastMatch = null;
 		
 		public GameBoard(int rows, int cols, Bitmap bottom, Bitmap top, Bitmap[] pieces) {
 			rand = new Random(System.currentTimeMillis());
@@ -150,14 +152,42 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 			for (int r = row+1; r < board[col].length; r++) {
 				if (board[col][r] == BOTTOM) {
 					for (int i = r; i > row; i--) {
-						score += 10;
 						board[col][i] = EMPTY;
 					}
-					onMatch();
+					scoreCupMatch(r-row);
 					break;
 				}
 			}
 			falling[col] = EMPTY;
+		}
+		
+		/**
+		 * Tally up the score for match
+		 * @param piece The id of the piece that was matched
+		 */
+		private void scoreMatch(int piece) {
+			if (lastMatch == piece && piece != BOTTOM) {
+				if (multiplier < 8) {
+					multiplier++;
+				}
+				score += 5 * multiplier;
+			} else {
+				score += 5 * multiplier;
+				multiplier = 1;
+			}
+			onMatch();
+			lastMatch = piece;
+		}
+		
+		/**
+		 * A cup match has occurred! Score it.
+		 * @param rows The number of rows in the cup match, including cup pieces
+		 */
+		private void scoreCupMatch(int rows) {
+			lastMatch = BOTTOM;
+			score += 10 * rows * multiplier;
+			onMatch();
+			multiplier = 1;
 		}
 		
 		/**
@@ -187,10 +217,9 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				}
 				if (falling[col] == board[col][row+1]) {
 					// Match!
-					score += 5;
+					scoreMatch(falling[col]);
 					falling[col] = EMPTY;
 					board[col][row+1] = EMPTY;
-					onMatch();
 					continue;
 				}
 				if (falling[col] == TOP && board[col][row+1] != EMPTY) {
@@ -223,10 +252,9 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 						if (board[col][0] != EMPTY) {
 							if (board[col][0] == falling[col]) {
 								// The match is allowed to clear and averts near disaster.
-								score += 5;
+								scoreMatch(falling[col]);
 								falling[col] = EMPTY;
 								board[col][0] = EMPTY;
-								onMatch();
 							} else {
 								// Game over, man! Clear out the falling row so everything draws nicely
 								falling = new int[falling.length];
@@ -301,6 +329,16 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 						c.drawBitmap(b, col*width, (row+1)*height, null);
 					}
 				}
+			}
+			b = getBitmap(lastMatch);
+			if (b != null) {
+				c.drawBitmap(b,
+						new Rect(0, 0, b.getWidth(), b.getHeight()),
+						new Rect(
+								(int)(getWidth() - (b.getWidth() * 0.75)),
+								(int)(b.getHeight() * 1.25),
+								(int)(getWidth() - (b.getWidth() * 0.25)),
+								(int)(b.getHeight()*1.75)), null);
 			}
 		}
 	}
@@ -440,6 +478,9 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		textp.setTypeface(Typeface.create("Narkism", Typeface.NORMAL));
 		c.drawBitmap(scoreLabel, getWidth()-scoreLabel.getWidth(), 0, null);
 		c.drawText(Integer.toString(board.score), (int)(getWidth() * 0.98), (int)(getHeight() * 0.08), textp);
+		if (board.lastMatch >= 0) {
+			c.drawText(String.format("x %d", board.multiplier), (int)(getWidth() * 0.93), (int)(getHeight() * 0.235), textp);
+		}
 		
 		if (board.gameOver) {
 			c.drawBitmap(gameover, getWidth()/2-gameover.getWidth()/2, getHeight()/2-gameover.getHeight()/2, null);
