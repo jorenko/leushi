@@ -73,7 +73,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 											});
 			break;
 		case PUZZLE:
-			board = new GameBoard(this, ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
+			board = new PuzzleBoard(this, ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
 										new Bitmap[] {
 											BitmapFactory.decodeResource(getResources(), R.drawable.airball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.decayball),
