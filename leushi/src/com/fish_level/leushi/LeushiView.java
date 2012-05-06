@@ -60,7 +60,20 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		divider = BitmapFactory.decodeResource(getResources(), R.drawable.stroke);
 		scoreLabel = BitmapFactory.decodeResource(getResources(), R.drawable.score);
 		thread = new GameThread();
-		board = new GameBoard(this, ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
+		switch (type) {
+		case SURVIVAL:
+			board = new SurvivalBoard(this, ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
+											new Bitmap[] {
+												BitmapFactory.decodeResource(getResources(), R.drawable.airball),
+												BitmapFactory.decodeResource(getResources(), R.drawable.decayball),
+												BitmapFactory.decodeResource(getResources(), R.drawable.earthball),
+												BitmapFactory.decodeResource(getResources(), R.drawable.fireball),
+												BitmapFactory.decodeResource(getResources(), R.drawable.growthball),
+												BitmapFactory.decodeResource(getResources(), R.drawable.waterball),
+											});
+			break;
+		case PUZZLE:
+			board = new GameBoard(this, ROWS, COLUMNS, BitmapFactory.decodeResource(getResources(), R.drawable.bottom), BitmapFactory.decodeResource(getResources(), R.drawable.top),
 										new Bitmap[] {
 											BitmapFactory.decodeResource(getResources(), R.drawable.airball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.decayball),
@@ -69,6 +82,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 											BitmapFactory.decodeResource(getResources(), R.drawable.growthball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.waterball),
 										});
+			break;
+		}
 		tick_ms = 1000;
 		textpaint = new Paint();
 		textpaint.setARGB(0xff, 0xc0, 0xc0, 0xc0);
