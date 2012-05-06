@@ -12,7 +12,8 @@ import android.view.WindowManager;
 public class LeushiActivity extends Activity {
 	private MainMenuView menu = null;
 	private LeushiView game = null;
-	private MainMenuView.MenuItem newGameButton = null;
+	private MainMenuView.MenuItem survivalButton = null;
+	private MainMenuView.MenuItem puzzleButton = null;
 	private MainMenuView.MenuItem resumeButton = null;
 	private MainMenuView.MenuItem quitButton = null;
 	private MainMenuView.MenuItem title = null;
@@ -30,21 +31,27 @@ public class LeushiActivity extends Activity {
     	if (menu == null) {
             menu = new MainMenuView(this, null, BitmapFactory.decodeResource(getResources(), R.drawable.menu_background));
             menu.addItem(getTitleButton());
-            menu.addItem(getNewGameButton());
+            menu.addItem(getSurvivalButton());
+            menu.addItem(getPuzzleButton());
             menu.addItem(getQuitButton());
             menu.addItem(getCompanyButton());
     	}
     	return menu;
     }
     
-    private LeushiView newGame() {
-    	game = new LeushiView(this, null);
+    private LeushiView newSurvival() {
+    	game = new LeushiView(this, null, LeushiView.gameType.SURVIVAL);
+    	return game;
+    }
+    
+    private LeushiView newPuzzle() {
+    	game = new LeushiView(this, null, LeushiView.gameType.PUZZLE);
     	return game;
     }
     
     private LeushiView getGame() {
     	if (game == null) {
-    		return newGame();
+    		return newSurvival();
     	} else {
     		return game;
     	}
@@ -62,22 +69,35 @@ public class LeushiActivity extends Activity {
     	return title;
     }
     
-    private MainMenuView.MenuItem getNewGameButton() {
-    	if (newGameButton == null) {
-    		newGameButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game), 0, 0.54) {
+    private MainMenuView.MenuItem getSurvivalButton() {
+    	if (survivalButton == null) {
+    		survivalButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game), 0, 0.54) {
 				@Override
 	        	public void onClick() {
-	        		setContentView(newGame());
+	        		setContentView(newSurvival());
 	        		getMenu().addItem(getResumeButton());
 	        	}
 	        };
     	}
-    	return newGameButton;
+    	return survivalButton;
+    }
+    
+    private MainMenuView.MenuItem getPuzzleButton() {
+    	if (puzzleButton == null) {
+    		puzzleButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game), 0, 0.42) {
+				@Override
+	        	public void onClick() {
+	        		setContentView(newPuzzle());
+	        		getMenu().addItem(getResumeButton());
+	        	}
+	        };
+    	}
+    	return puzzleButton;
     }
     
     private MainMenuView.MenuItem getResumeButton() {
     	if (resumeButton == null) {
-    		resumeButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.resume), 0, 0.42) {
+    		resumeButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.resume), 0, 0.30) {
 				@Override
 	        	public void onClick() {
 					getGame().resume();
