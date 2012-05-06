@@ -15,17 +15,20 @@ public class GameBoard {
 	protected final int BOTTOM = -1;
 	protected final int TOP = -2;
 	protected final int EMPTY = -3;
+	protected enum gameState {
+		PLAYING, WIN, LOSE
+	};
 	
 	protected int board[][];
 	protected int next[];
 	protected int falling[];
 	protected int row = 0;
 	protected int score = 0;
-	protected boolean gameOver = false;
 	protected Bitmap bottom;
 	protected Bitmap top;
 	protected Bitmap pieces[];
 	protected Random rand = null;
+	protected gameState state = gameState.PLAYING;
 	
 	public GameBoard(LeushiView leushiView, int rows, int cols, Bitmap bottom, Bitmap top, Bitmap[] pieces) {
 		this.leushiView = leushiView;
@@ -121,10 +124,17 @@ public class GameBoard {
 	private void tickTop(int col, int row) {
 		for (int r = row+1; r < board[col].length; r++) {
 			if (board[col][r] == BOTTOM) {
+				int[] p = new int[this.pieces.length];
+				for (int i = 0; i < p.length; i++) {
+					p[i] = 0;
+				}
 				for (int i = r; i > row; i--) {
+					if (board[col][i] >= 0 && board[col][i] < p.length) {
+						p[board[col][i]]++;
+					}
 					board[col][i] = EMPTY;
 				}
-				scoreCupMatch(r-row);
+				scoreCupMatch(p);
 				break;
 			}
 		}
@@ -148,12 +158,16 @@ public class GameBoard {
 	 * A cup match has occurred! Score it.
 	 * @param rows The number of rows in the cup match, including cup pieces
 	 */
-	protected int getCupMatchScore(int rows) {
-		return 10 * rows;
+	protected int getCupMatchScore(int[] pieces) {
+		int val = 1;
+		for (int p : pieces) {
+			val += p;
+		}
+		return 10 * val;
 	}
 	
-	private void scoreCupMatch(int rows) {
-		score += getCupMatchScore(rows);
+	private void scoreCupMatch(int[] pieces) {
+		score += getCupMatchScore(pieces);
 		this.leushiView.onMatch();
 	}
 	
@@ -165,7 +179,7 @@ public class GameBoard {
 	 * falling pieces have come to rest.
 	 */
 	public void tick() {
-		if (gameOver) {
+		if (state != gameState.PLAYING) {
 			return;
 		}
 		boolean empty = true;
@@ -228,7 +242,7 @@ public class GameBoard {
 							for (int i = 0; i < falling.length; i++) {
 								falling[i] = EMPTY;
 							}
-							gameOver = true;
+							state = gameState.LOSE;
 							return;
 						}
 					}

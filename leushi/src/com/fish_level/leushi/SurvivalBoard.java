@@ -18,16 +18,17 @@ public class SurvivalBoard extends GameBoard {
 		Bitmap b;
 		b = getBitmap(lastMatch);
 		if (b != null) {
-			c.drawBitmap(b,
-					new Rect(0, 0, b.getWidth(), b.getHeight()),
-					new Rect(
-							(int)(this.leushiView.getWidth() - (b.getWidth() * 0.75)),
-							(int)(b.getHeight() * 1.25),
-							(int)(this.leushiView.getWidth() - (b.getWidth() * 0.25)),
-							(int)(b.getHeight()*1.75)), null);
-		}
-		if (lastMatch >= 0) {
-			c.drawText(String.format("x %d", multiplier), (int)(leushiView.getWidth() * 0.93), (int)(leushiView.getHeight() * 0.235), leushiView.textpaint);
+			Rect pos = new Rect(
+					(int)(this.leushiView.getWidth() - (b.getWidth() * 0.75)),
+					(int)(b.getHeight() * 1.25),
+					(int)(this.leushiView.getWidth() - (b.getWidth() * 0.25)),
+					(int)(b.getHeight()*1.75));
+			
+			c.drawBitmap(b, new Rect(0, 0, b.getWidth(), b.getHeight()), pos, null);
+			
+			int txtx = (pos.left + pos.right) / 2;//(int)(leushiView.getWidth() * 0.93);
+			int txty = pos.bottom + (int)leushiView.textpaint.getTextSize() + 2;//(int)(leushiView.getHeight() * 0.235);
+			c.drawText(String.format("x %d", multiplier), txtx, txty, leushiView.textpaint);
 		}
 	}
 	
@@ -48,9 +49,9 @@ public class SurvivalBoard extends GameBoard {
 	}
 
 	@Override
-	protected int getCupMatchScore(int rows) {
+	protected int getCupMatchScore(int[] pieces) {
 		lastMatch = BOTTOM;
-		int val = super.getCupMatchScore(rows) * multiplier;
+		int val = super.getCupMatchScore(pieces) * multiplier;
 		multiplier = 1;
 		return val;
 	}

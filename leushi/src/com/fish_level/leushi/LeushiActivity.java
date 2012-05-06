@@ -71,7 +71,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getSurvivalButton() {
     	if (survivalButton == null) {
-    		survivalButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game), 0, 0.54) {
+    		survivalButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_survival), 0, 0.54) {
 				@Override
 	        	public void onClick() {
 	        		setContentView(newSurvival());
@@ -84,7 +84,7 @@ public class LeushiActivity extends Activity {
     
     private MainMenuView.MenuItem getPuzzleButton() {
     	if (puzzleButton == null) {
-    		puzzleButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_game), 0, 0.42) {
+    		puzzleButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.new_puzzle), 0, 0.42) {
 				@Override
 	        	public void onClick() {
 	        		setContentView(newPuzzle());

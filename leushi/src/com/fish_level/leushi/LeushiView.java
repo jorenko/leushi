@@ -2,6 +2,8 @@ package com.fish_level.leushi;
 
 import org.schroe.leushi.R;
 
+import com.fish_level.leushi.GameBoard.gameState;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,6 +23,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	private int current_bg = 0;
 	private Bitmap[] backgrounds = null;
 	private Bitmap gameover = null;
+	private Bitmap win = null;
 	Bitmap divider = null;
 	private Bitmap scoreLabel = null;
 	private GameThread thread = null;
@@ -57,6 +60,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 				BitmapFactory.decodeResource(getResources(), R.drawable.water_background),
 		};
 		gameover = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
+		win = BitmapFactory.decodeResource(getResources(), R.drawable.win);
 		divider = BitmapFactory.decodeResource(getResources(), R.drawable.stroke);
 		scoreLabel = BitmapFactory.decodeResource(getResources(), R.drawable.score);
 		thread = new GameThread();
@@ -81,7 +85,8 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 											BitmapFactory.decodeResource(getResources(), R.drawable.fireball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.growthball),
 											BitmapFactory.decodeResource(getResources(), R.drawable.waterball),
-										});
+										}, new int[] {1,1,1,1,1,1}
+									);
 			break;
 		}
 		tick_ms = 1000;
@@ -194,8 +199,12 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 		c.drawBitmap(scoreLabel, getWidth()-scoreLabel.getWidth(), 0, null);
 		c.drawText(Integer.toString(board.score), (int)(getWidth() * 0.98), (int)(getHeight() * 0.08), textpaint);
 		
-		if (board.gameOver) {
+		if (board.state == gameState.LOSE) {
 			c.drawBitmap(gameover, getWidth()/2-gameover.getWidth()/2, getHeight()/2-gameover.getHeight()/2, null);
+		}
+		
+		if (board.state == gameState.WIN) {
+			c.drawBitmap(win, getWidth()/2-gameover.getWidth()/2, getHeight()/2-gameover.getHeight()/2, null);
 		}
 	}
 	
@@ -241,7 +250,7 @@ public class LeushiView extends SurfaceView implements SurfaceHolder.Callback {
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (board.gameOver) {
+		if (board.state != gameState.PLAYING) {
 			downCol = -1;
 			hovering = -1;
 			return false;
