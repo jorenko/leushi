@@ -3,6 +3,10 @@ package com.fish_level.leushi;
 import org.schroe.leushi.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +22,8 @@ public class LeushiActivity extends Activity {
 	private MainMenuView.MenuItem quitButton = null;
 	private MainMenuView.MenuItem title = null;
 	private MainMenuView.MenuItem company = null;
+	private SharedPreferences settings = null;
+	private static final int ConfirmQuitDialog = 1;
 	
     /** Called when the activity is first created. */
     @Override
@@ -27,6 +33,29 @@ public class LeushiActivity extends Activity {
         setContentView(getMenu());
     }
     
+    @Override
+    protected Dialog onCreateDialog(int id) {
+    	Dialog d = null;
+    	switch (id) {
+    	case ConfirmQuitDialog:
+    		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    		builder.setMessage("Are you sure you want to quit?")
+    		       .setCancelable(false)
+    		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    		           public void onClick(DialogInterface dialog, int id) {
+    		                finish();
+    		           }
+    		       })
+    		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+    		           public void onClick(DialogInterface dialog, int id) {
+    		                dialog.cancel();
+    		           }
+    		       });
+    		d = builder.create();
+    		break;
+    	}
+    	return d;
+    }
     private MainMenuView getMenu() {
     	if (menu == null) {
             menu = new MainMenuView(this, null, BitmapFactory.decodeResource(getResources(), R.drawable.menu_background));
@@ -113,7 +142,7 @@ public class LeushiActivity extends Activity {
     		quitButton = new MainMenuView.MenuItem(BitmapFactory.decodeResource(getResources(), R.drawable.quit), 0, 0.66) {
 				@Override
 	        	public void onClick() {
-	        		finish();
+					showDialog(ConfirmQuitDialog);
 	        	}
 	        };
     	}
