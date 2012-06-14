@@ -22,7 +22,6 @@ public class LeushiActivity extends Activity {
 	private MainMenuView.MenuItem quitButton = null;
 	private MainMenuView.MenuItem title = null;
 	private MainMenuView.MenuItem company = null;
-	private SharedPreferences settings = null;
 	private static final int ConfirmQuitDialog = 1;
 	
     /** Called when the activity is first created. */
